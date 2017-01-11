@@ -93,12 +93,6 @@ public class FeedItemAnimator extends DefaultItemAnimator {
         if (preInfo instanceof FeedItemHolderInfo) {
             FeedItemHolderInfo feedItemHolderInfo = (FeedItemHolderInfo) preInfo;
             FeedAdapter.CellFeedViewHolder holder = (FeedAdapter.CellFeedViewHolder) newHolder;
-
-            animateHeartButton(holder);
-            updateLikesCounter(holder, holder.getFeedItem().likesCount);
-            if (FeedAdapter.ACTION_LIKE_IMAGE_CLICKED.equals(feedItemHolderInfo.updateAction)) {
-                animatePhotoLike(holder);
-            }
         }
 
         return false;
@@ -113,115 +107,12 @@ public class FeedItemAnimator extends DefaultItemAnimator {
         }
     }
 
-    private void animateHeartButton(final FeedAdapter.CellFeedViewHolder holder) {
-        AnimatorSet animatorSet = new AnimatorSet();
-
-        ObjectAnimator rotationAnim = ObjectAnimator.ofFloat(holder.btnLike, "rotation", 0f, 360f);
-        rotationAnim.setDuration(300);
-        rotationAnim.setInterpolator(ACCELERATE_INTERPOLATOR);
-
-        ObjectAnimator bounceAnimX = ObjectAnimator.ofFloat(holder.btnLike, "scaleX", 0.2f, 1f);
-        bounceAnimX.setDuration(300);
-        bounceAnimX.setInterpolator(OVERSHOOT_INTERPOLATOR);
-
-        ObjectAnimator bounceAnimY = ObjectAnimator.ofFloat(holder.btnLike, "scaleY", 0.2f, 1f);
-        bounceAnimY.setDuration(300);
-        bounceAnimY.setInterpolator(OVERSHOOT_INTERPOLATOR);
-        bounceAnimY.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                holder.btnLike.setImageResource(R.drawable.ic_heart_red);
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                heartAnimationsMap.remove(holder);
-                dispatchChangeFinishedIfAllAnimationsEnded(holder);
-            }
-        });
-
-        animatorSet.play(bounceAnimX).with(bounceAnimY).after(rotationAnim);
-        animatorSet.start();
-
-        heartAnimationsMap.put(holder, animatorSet);
-    }
-
-    private void updateLikesCounter(FeedAdapter.CellFeedViewHolder holder, int toValue) {
-        String likesCountTextFrom = holder.tsLikesCounter.getResources().getQuantityString(
-                R.plurals.likes_count, toValue - 1, toValue - 1
-        );
-        holder.tsLikesCounter.setCurrentText(likesCountTextFrom);
-
-        String likesCountTextTo = holder.tsLikesCounter.getResources().getQuantityString(
-                R.plurals.likes_count, toValue, toValue
-        );
-        holder.tsLikesCounter.setText(likesCountTextTo);
-    }
-
-    private void animatePhotoLike(final FeedAdapter.CellFeedViewHolder holder) {
-        holder.vBgLike.setVisibility(View.VISIBLE);
-        holder.ivLike.setVisibility(View.VISIBLE);
-
-        holder.vBgLike.setScaleY(0.1f);
-        holder.vBgLike.setScaleX(0.1f);
-        holder.vBgLike.setAlpha(1f);
-        holder.ivLike.setScaleY(0.1f);
-        holder.ivLike.setScaleX(0.1f);
-
-        AnimatorSet animatorSet = new AnimatorSet();
-
-        ObjectAnimator bgScaleYAnim = ObjectAnimator.ofFloat(holder.vBgLike, "scaleY", 0.1f, 1f);
-        bgScaleYAnim.setDuration(200);
-        bgScaleYAnim.setInterpolator(DECCELERATE_INTERPOLATOR);
-        ObjectAnimator bgScaleXAnim = ObjectAnimator.ofFloat(holder.vBgLike, "scaleX", 0.1f, 1f);
-        bgScaleXAnim.setDuration(200);
-        bgScaleXAnim.setInterpolator(DECCELERATE_INTERPOLATOR);
-        ObjectAnimator bgAlphaAnim = ObjectAnimator.ofFloat(holder.vBgLike, "alpha", 1f, 0f);
-        bgAlphaAnim.setDuration(200);
-        bgAlphaAnim.setStartDelay(150);
-        bgAlphaAnim.setInterpolator(DECCELERATE_INTERPOLATOR);
-
-        ObjectAnimator imgScaleUpYAnim = ObjectAnimator.ofFloat(holder.ivLike, "scaleY", 0.1f, 1f);
-        imgScaleUpYAnim.setDuration(300);
-        imgScaleUpYAnim.setInterpolator(DECCELERATE_INTERPOLATOR);
-        ObjectAnimator imgScaleUpXAnim = ObjectAnimator.ofFloat(holder.ivLike, "scaleX", 0.1f, 1f);
-        imgScaleUpXAnim.setDuration(300);
-        imgScaleUpXAnim.setInterpolator(DECCELERATE_INTERPOLATOR);
-
-        ObjectAnimator imgScaleDownYAnim = ObjectAnimator.ofFloat(holder.ivLike, "scaleY", 1f, 0f);
-        imgScaleDownYAnim.setDuration(300);
-        imgScaleDownYAnim.setInterpolator(ACCELERATE_INTERPOLATOR);
-        ObjectAnimator imgScaleDownXAnim = ObjectAnimator.ofFloat(holder.ivLike, "scaleX", 1f, 0f);
-        imgScaleDownXAnim.setDuration(300);
-        imgScaleDownXAnim.setInterpolator(ACCELERATE_INTERPOLATOR);
-
-        animatorSet.playTogether(bgScaleYAnim, bgScaleXAnim, bgAlphaAnim, imgScaleUpYAnim, imgScaleUpXAnim);
-        animatorSet.play(imgScaleDownYAnim).with(imgScaleDownXAnim).after(imgScaleUpYAnim);
-
-        animatorSet.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                likeAnimationsMap.remove(holder);
-                resetLikeAnimationState(holder);
-                dispatchChangeFinishedIfAllAnimationsEnded(holder);
-            }
-        });
-        animatorSet.start();
-
-        likeAnimationsMap.put(holder, animatorSet);
-    }
-
     private void dispatchChangeFinishedIfAllAnimationsEnded(FeedAdapter.CellFeedViewHolder holder) {
         if (likeAnimationsMap.containsKey(holder) || heartAnimationsMap.containsKey(holder)) {
             return;
         }
 
         dispatchAnimationFinished(holder);
-    }
-
-    private void resetLikeAnimationState(FeedAdapter.CellFeedViewHolder holder) {
-        holder.vBgLike.setVisibility(View.INVISIBLE);
-        holder.ivLike.setVisibility(View.INVISIBLE);
     }
 
     @Override
