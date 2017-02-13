@@ -25,8 +25,6 @@ import io.github.froger.instamaterial.ui.view.LoadingFeedItemView;
  * Created by froger_mcs on 05.11.14.
  */
 public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    public static final String ACTION_LIKE_BUTTON_CLICKED = "action_like_button_button";
-    public static final String ACTION_LIKE_IMAGE_CLICKED = "action_like_image_button";
 
     public static final int VIEW_TYPE_DEFAULT = 1;
     public static final int VIEW_TYPE_LOADER = 2;
@@ -62,16 +60,10 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     private void setupClickableViews(final View view, final CellFeedViewHolder cellFeedViewHolder) {
-
         cellFeedViewHolder.ivFeedCenter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int adapterPosition = cellFeedViewHolder.getAdapterPosition();
-                feedItems.get(adapterPosition).likesCount++;
-                notifyItemChanged(adapterPosition, ACTION_LIKE_IMAGE_CLICKED);
-                if (context instanceof MainActivity) {
-                    ((MainActivity) context).showLikedSnackbar();
-                }
+                //if fill image is clicked
             }
         });
 
@@ -161,7 +153,6 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             this.feedItem = feedItem;
             int adapterPosition = getAdapterPosition();
             ivFeedCenter.setImageResource(adapterPosition % 2 == 0 ? R.drawable.img_feed_center_1 : R.drawable.img_feed_center_2);
-
         }
 
         public FeedItem getFeedItem() {
