@@ -62,18 +62,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     private void setupClickableViews(final View view, final CellFeedViewHolder cellFeedViewHolder) {
-        cellFeedViewHolder.btnComments.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onFeedItemClickListener.onCommentsClick(view, cellFeedViewHolder.getAdapterPosition());
-            }
-        });
-        cellFeedViewHolder.btnMore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onFeedItemClickListener.onMoreClick(v, cellFeedViewHolder.getAdapterPosition());
-            }
-        });
+
         cellFeedViewHolder.ivFeedCenter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,17 +74,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             }
         });
-        cellFeedViewHolder.btnLike.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int adapterPosition = cellFeedViewHolder.getAdapterPosition();
-                feedItems.get(adapterPosition).likesCount++;
-                notifyItemChanged(adapterPosition, ACTION_LIKE_BUTTON_CLICKED);
-                if (context instanceof MainActivity) {
-                    ((MainActivity) context).showLikedSnackbar();
-                }
-            }
-        });
+
         cellFeedViewHolder.ivUserProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -168,24 +147,8 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static class CellFeedViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.ivFeedCenter)
         ImageView ivFeedCenter;
-        @BindView(R.id.ivFeedBottom)
-        ImageView ivFeedBottom;
-        @BindView(R.id.btnComments)
-        ImageButton btnComments;
-        @BindView(R.id.btnLike)
-        ImageButton btnLike;
-        @BindView(R.id.btnMore)
-        ImageButton btnMore;
-        @BindView(R.id.vBgLike)
-        View vBgLike;
-        @BindView(R.id.ivLike)
-        ImageView ivLike;
-        @BindView(R.id.tsLikesCounter)
-        TextSwitcher tsLikesCounter;
         @BindView(R.id.ivUserProfile)
         ImageView ivUserProfile;
-        @BindView(R.id.vImageRoot)
-        FrameLayout vImageRoot;
 
         FeedItem feedItem;
 
@@ -198,11 +161,7 @@ public class FeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             this.feedItem = feedItem;
             int adapterPosition = getAdapterPosition();
             ivFeedCenter.setImageResource(adapterPosition % 2 == 0 ? R.drawable.img_feed_center_1 : R.drawable.img_feed_center_2);
-            ivFeedBottom.setImageResource(adapterPosition % 2 == 0 ? R.drawable.img_feed_bottom_1 : R.drawable.img_feed_bottom_2);
-            btnLike.setImageResource(feedItem.isLiked ? R.drawable.ic_heart_red : R.drawable.ic_heart_outline_grey);
-            tsLikesCounter.setCurrentText(vImageRoot.getResources().getQuantityString(
-                    R.plurals.likes_count, feedItem.likesCount, feedItem.likesCount
-            ));
+
         }
 
         public FeedItem getFeedItem() {
